@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO e Metatags -->
+  <title>Inventário de Orientação Profissional (IOP)</title>
+  <meta name="description" content="Ferramenta interativa para auxiliar na definição de áreas de atuação e no autoconhecimento profissional." />
+  <meta name="keywords" content="orientação profissional, autoconhecimento, avaliação profissional, terapia cognitivo-comportamental" />
+
+  <!-- Metatags Open Graph -->
+  <meta property="og:title" content="Inventário de Orientação Profissional (IOP)" />
+  <meta property="og:description" content="Ferramenta interativa para auxiliar na definição de áreas de atuação e no autoconhecimento profissional." />
+  <!-- Substituído link externo por favicon local -->
+  <meta property="og:image" content="favicon.ico" />
+  <meta property="og:url" content="https://ricmurtapsicologia.github.io/Orient.Profissional/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Metatags para Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Inventário de Orientação Profissional (IOP)" />
+  <meta name="twitter:description" content="Ferramenta interativa para auxiliar na definição de áreas de atuação e no autoconhecimento profissional." />
+  <!-- Substituído link externo por favicon local -->
+  <meta name="twitter:image" content="favicon.ico" />
+
+  <!-- Favicon e Canonical -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="canonical" href="https://ricmurtapsicologia.github.io/Orient.Profissional/" />
+
+  <!-- CSS Interno – para desenvolvimento; em produção, recomenda-se externalizar -->
+  <style>
+    /* Reset e estilos básicos */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+      /* Fade-in simples ao carregar */
+      opacity: 0;
+      animation: fadeIn 0.6s forwards ease-in-out;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Splash Screen */
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0b3d91;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      z-index: 1000;
+      transition: opacity 1s ease;
+    }
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #0b3d91, #1c64f2);
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      font-size: 1.1rem;
+    }
+
+    /* Layout Semântico */
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    .section-content {
+      background: #fff;
+      padding: 1.8rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .section-content:hover {
+      transform: translateY(-5px);
+    }
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.75rem;
+      color: #0b3d91;
+    }
+    h3 {
+      margin: 1rem 0 0.75rem;
+      font-size: 1.4rem;
+      color: #1c64f2;
+    }
+
+    /* Formulário e Inputs */
+    form {
+      margin-bottom: 2rem;
+    }
+    .patient-info {
+      margin-bottom: 1.5rem;
+    }
+    .patient-info input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fafafa;
+    }
+    .question {
+      margin-bottom: 1rem;
+    }
+    .question p {
+      margin-bottom: 0.5rem;
+    }
+    .options label {
+      margin-right: 1rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .options input[type="radio"] {
+      margin-right: 0.3rem;
+    }
+    .options label:hover {
+      color: #1c64f2;
+    }
+
+    /* Botões de Ação (CTA) */
+    .cta {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .cta button {
+      background: #0b3d91;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      margin: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cta button:hover {
+      background: #092f6c;
+      transform: scale(1.03);
+    }
+    .icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+    }
+
+    /* Seção de Resultados */
+    .result-section {
+      background: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.5s ease;
+    }
+    .result-section.expanded {
+      max-height: 2000px; /* Aumentado para garantir que todo o conteúdo apareça */
+      opacity: 1;
+    }
+    .result-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #0b3d91;
+    }
+    .result-item {
+      margin-bottom: 0.5rem;
+    }
+    .perfil-section {
+      margin-top: 1rem;
+    }
+    .perfil-section p {
+      margin-bottom: 0.5rem;
+    }
+    .perfil-icon {
+      width: 60px;
+      height: 60px;
+      vertical-align: middle;
+      margin-right: 12px;
+      border-radius: 50%;
+    }
+
+    /* Footer */
+    footer {
+      background: #0b3d91;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .cta button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+      }
+      .perfil-icon {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash">
+    <h1>Bem-vindo ao IOP</h1>
+    <p>Inventário de Orientação Profissional</p>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <h1>Inventário de Orientação Profissional (IOP)</h1>
+    <p>Responda as perguntas para identificar áreas de atuação alinhadas ao seu perfil</p>
+  </header>
+
+  <main>
+    <!-- Informações do Paciente -->
+    <section id="patient-info">
+      <div class="section-content">
+        <h2>Informações do Paciente</h2>
+        <div class="patient-info">
+          <input type="text" id="fullName" placeholder="Nome completo" required />
+          <input type="number" id="age" placeholder="Idade" required />
+          <input type="date" id="date" required />
+          <input type="email" id="email" placeholder="E-mail" required />
+          <input type="tel" id="phone" placeholder="Telefone" required />
+        </div>
+      </div>
+    </section>
+
+    <!-- Fundamentação e Objetivos -->
+    <section id="fundamentacao">
+      <div class="section-content">
+        <h2>1. Fundamentação e Objetivos</h2>
+        <p style="text-align: justify; margin-bottom: 1em;">
+          <strong>Fundamentação Teórica:</strong> Este inventário avalia cinco dimensões essenciais para a orientação profissional, baseadas em estudos consolidados dos principais testes no Brasil:
+          <br><br>
+          <strong>– Interesses Profissionais (IN):</strong> As áreas e atividades que despertam seu interesse.<br>
+          <strong>– Aptidões e Habilidades (AH):</strong> Suas competências técnicas e cognitivas.<br>
+          <strong>– Valores e Motivação (VM):</strong> Seus valores, expectativas e senso de propósito.<br>
+          <strong>– Personalidade e Estilo de Trabalho (PE):</strong> Seus traços de personalidade e preferências de ambiente.<br>
+          <strong>– Empreendedorismo e Iniciativa (EI):</strong> Sua disposição para agir, inovar e assumir riscos.
+        </p>
+        <p style="text-align: justify; margin-bottom: 1em;">
+          <strong>Objetivo:</strong> Integrar os escores das dimensões para revelar seu perfil e sugerir áreas de atuação compatíveis com seus pontos fortes e oportunidades de desenvolvimento.
+        </p>
+      </div>
+    </section>
+
+    <!-- Instruções de Aplicação -->
+    <section id="instrucoes">
+      <div class="section-content">
+        <h2>2. Instruções de Aplicação</h2>
+        <p style="text-align: justify; margin-bottom: 1em;">
+          Este inventário contém <strong>50 itens</strong> divididos igualmente entre 5 dimensões (10 itens para cada dimensão). Para cada afirmação, selecione seu grau de concordância de <strong>1 a 5</strong>, onde:
+        </p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1em;">
+          <li><strong>1</strong>: Discordo Fortemente</li>
+          <li><strong>2, 3 e 4</strong>: Concordância em níveis intermediários</li>
+          <li><strong>5</strong>: Concordo Fortemente</li>
+        </ul>
+        <p style="text-align: justify;">
+          Ao final, os escores parciais de cada dimensão (10 a 50 pontos) serão somados para formar o escore global (de 50 a 250 pontos). Seu perfil dominante será definido se uma dimensão superar as demais por pelo menos 5 pontos; caso contrário, o resultado será “Perfil Misto/Indeterminado.”
+        </p>
+      </div>
+    </section>
+
+    <!-- Itens do Inventário -->
+    <section id="itens">
+      <div class="section-content">
+        <h2>3. Itens do Inventário</h2>
+        <form id="iopForm">
+          <!-- (50 perguntas divididas em 5 dimensões, cada uma com 10 itens) -->
+          
+          <!-- 1) Interesses Profissionais (IN) -->
+          <div class="items-list">
+            <h3>Dimensão 1: Interesses Profissionais (IN)</h3>
+            <ol>
+              <li class="question">
+                <p>Gosto de trabalhar com números e dados.</p>
+                <div class="options">
+                  <label><input type="radio" name="in1" value="1" required> 1</label>
+                  <label><input type="radio" name="in1" value="2"> 2</label>
+                  <label><input type="radio" name="in1" value="3"> 3</label>
+                  <label><input type="radio" name="in1" value="4"> 4</label>
+                  <label><input type="radio" name="in1" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho interesse por atividades criativas e artísticas.</p>
+                <div class="options">
+                  <label><input type="radio" name="in2" value="1" required> 1</label>
+                  <label><input type="radio" name="in2" value="2"> 2</label>
+                  <label><input type="radio" name="in2" value="3"> 3</label>
+                  <label><input type="radio" name="in2" value="4"> 4</label>
+                  <label><input type="radio" name="in2" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Prefiro atividades que envolvem tecnologia e inovação.</p>
+                <div class="options">
+                  <label><input type="radio" name="in3" value="1" required> 1</label>
+                  <label><input type="radio" name="in3" value="2"> 2</label>
+                  <label><input type="radio" name="in3" value="3"> 3</label>
+                  <label><input type="radio" name="in3" value="4"> 4</label>
+                  <label><input type="radio" name="in3" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto-me atraído por áreas de saúde e bem-estar.</p>
+                <div class="options">
+                  <label><input type="radio" name="in4" value="1" required> 1</label>
+                  <label><input type="radio" name="in4" value="2"> 2</label>
+                  <label><input type="radio" name="in4" value="3"> 3</label>
+                  <label><input type="radio" name="in4" value="4"> 4</label>
+                  <label><input type="radio" name="in4" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Gosto de pesquisar e explorar novas áreas de conhecimento.</p>
+                <div class="options">
+                  <label><input type="radio" name="in5" value="1" required> 1</label>
+                  <label><input type="radio" name="in5" value="2"> 2</label>
+                  <label><input type="radio" name="in5" value="3"> 3</label>
+                  <label><input type="radio" name="in5" value="4"> 4</label>
+                  <label><input type="radio" name="in5" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho interesse em trabalhar em setores de serviços e atendimento.</p>
+                <div class="options">
+                  <label><input type="radio" name="in6" value="1" required> 1</label>
+                  <label><input type="radio" name="in6" value="2"> 2</label>
+                  <label><input type="radio" name="in6" value="3"> 3</label>
+                  <label><input type="radio" name="in6" value="4"> 4</label>
+                  <label><input type="radio" name="in6" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Aprecio atividades que envolvem resolução de problemas complexos.</p>
+                <div class="options">
+                  <label><input type="radio" name="in7" value="1" required> 1</label>
+                  <label><input type="radio" name="in7" value="2"> 2</label>
+                  <label><input type="radio" name="in7" value="3"> 3</label>
+                  <label><input type="radio" name="in7" value="4"> 4</label>
+                  <label><input type="radio" name="in7" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho interesse por carreiras relacionadas à comunicação e mídia.</p>
+                <div class="options">
+                  <label><input type="radio" name="in8" value="1" required> 1</label>
+                  <label><input type="radio" name="in8" value="2"> 2</label>
+                  <label><input type="radio" name="in8" value="3"> 3</label>
+                  <label><input type="radio" name="in8" value="4"> 4</label>
+                  <label><input type="radio" name="in8" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Gosto de áreas que exijam análise crítica e tomada de decisão.</p>
+                <div class="options">
+                  <label><input type="radio" name="in9" value="1" required> 1</label>
+                  <label><input type="radio" name="in9" value="2"> 2</label>
+                  <label><input type="radio" name="in9" value="3"> 3</label>
+                  <label><input type="radio" name="in9" value="4"> 4</label>
+                  <label><input type="radio" name="in9" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Prefiro trabalhar em campos que exigem constante atualização e pesquisa.</p>
+                <div class="options">
+                  <label><input type="radio" name="in10" value="1" required> 1</label>
+                  <label><input type="radio" name="in10" value="2"> 2</label>
+                  <label><input type="radio" name="in10" value="3"> 3</label>
+                  <label><input type="radio" name="in10" value="4"> 4</label>
+                  <label><input type="radio" name="in10" value="5"> 5</label>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- 2) Aptidões e Habilidades (AH) -->
+          <div class="items-list">
+            <h3>Dimensão 2: Aptidões e Habilidades (AH)</h3>
+            <ol>
+              <li class="question">
+                <p>Tenho facilidade para aprender novas tecnologias.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah1" value="1" required> 1</label>
+                  <label><input type="radio" name="ah1" value="2"> 2</label>
+                  <label><input type="radio" name="ah1" value="3"> 3</label>
+                  <label><input type="radio" name="ah1" value="4"> 4</label>
+                  <label><input type="radio" name="ah1" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Consigo resolver problemas técnicos com rapidez e eficácia.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah2" value="1" required> 1</label>
+                  <label><input type="radio" name="ah2" value="2"> 2</label>
+                  <label><input type="radio" name="ah2" value="3"> 3</label>
+                  <label><input type="radio" name="ah2" value="4"> 4</label>
+                  <label><input type="radio" name="ah2" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Minha habilidade com cálculos e análises é uma das minhas maiores forças.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah3" value="1" required> 1</label>
+                  <label><input type="radio" name="ah3" value="2"> 2</label>
+                  <label><input type="radio" name="ah3" value="3"> 3</label>
+                  <label><input type="radio" name="ah3" value="4"> 4</label>
+                  <label><input type="radio" name="ah3" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Consigo aplicar meus conhecimentos teóricos na prática com facilidade.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah4" value="1" required> 1</label>
+                  <label><input type="radio" name="ah4" value="2"> 2</label>
+                  <label><input type="radio" name="ah4" value="3"> 3</label>
+                  <label><input type="radio" name="ah4" value="4"> 4</label>
+                  <label><input type="radio" name="ah4" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Minhas habilidades práticas se destacam em tarefas técnicas.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah5" value="1" required> 1</label>
+                  <label><input type="radio" name="ah5" value="2"> 2</label>
+                  <label><input type="radio" name="ah5" value="3"> 3</label>
+                  <label><input type="radio" name="ah5" value="4"> 4</label>
+                  <label><input type="radio" name="ah5" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho facilidade em identificar e solucionar problemas complexos.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah6" value="1" required> 1</label>
+                  <label><input type="radio" name="ah6" value="2"> 2</label>
+                  <label><input type="radio" name="ah6" value="3"> 3</label>
+                  <label><input type="radio" name="ah6" value="4"> 4</label>
+                  <label><input type="radio" name="ah6" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Me destaco em tarefas que exigem atenção aos detalhes.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah7" value="1" required> 1</label>
+                  <label><input type="radio" name="ah7" value="2"> 2</label>
+                  <label><input type="radio" name="ah7" value="3"> 3</label>
+                  <label><input type="radio" name="ah7" value="4"> 4</label>
+                  <label><input type="radio" name="ah7" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho facilidade para aprender idiomas ou programar.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah8" value="1" required> 1</label>
+                  <label><input type="radio" name="ah8" value="2"> 2</label>
+                  <label><input type="radio" name="ah8" value="3"> 3</label>
+                  <label><input type="radio" name="ah8" value="4"> 4</label>
+                  <label><input type="radio" name="ah8" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Me sinto seguro ao aplicar conhecimentos técnicos em situações práticas.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah9" value="1" required> 1</label>
+                  <label><input type="radio" name="ah9" value="2"> 2</label>
+                  <label><input type="radio" name="ah9" value="3"> 3</label>
+                  <label><input type="radio" name="ah9" value="4"> 4</label>
+                  <label><input type="radio" name="ah9" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Acredito que minhas habilidades técnicas são um diferencial em minha área.</p>
+                <div class="options">
+                  <label><input type="radio" name="ah10" value="1" required> 1</label>
+                  <label><input type="radio" name="ah10" value="2"> 2</label>
+                  <label><input type="radio" name="ah10" value="3"> 3</label>
+                  <label><input type="radio" name="ah10" value="4"> 4</label>
+                  <label><input type="radio" name="ah10" value="5"> 5</label>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- 3) Valores e Motivação (VM) -->
+          <div class="items-list">
+            <h3>Dimensão 3: Valores e Motivação (VM)</h3>
+            <ol>
+              <li class="question">
+                <p>Busco carreiras que me proporcionem realização pessoal.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm1" value="1" required> 1</label>
+                  <label><input type="radio" name="vm1" value="2"> 2</label>
+                  <label><input type="radio" name="vm1" value="3"> 3</label>
+                  <label><input type="radio" name="vm1" value="4"> 4</label>
+                  <label><input type="radio" name="vm1" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Valorizo o equilíbrio entre vida pessoal e profissional.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm2" value="1" required> 1</label>
+                  <label><input type="radio" name="vm2" value="2"> 2</label>
+                  <label><input type="radio" name="vm2" value="3"> 3</label>
+                  <label><input type="radio" name="vm2" value="4"> 4</label>
+                  <label><input type="radio" name="vm2" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Acredito que meu trabalho deve ter um impacto positivo na sociedade.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm3" value="1" required> 1</label>
+                  <label><input type="radio" name="vm3" value="2"> 2</label>
+                  <label><input type="radio" name="vm3" value="3"> 3</label>
+                  <label><input type="radio" name="vm3" value="4"> 4</label>
+                  <label><input type="radio" name="vm3" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Procuro ambientes que me desafiem e me motivem a crescer.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm4" value="1" required> 1</label>
+                  <label><input type="radio" name="vm4" value="2"> 2</label>
+                  <label><input type="radio" name="vm4" value="3"> 3</label>
+                  <label><input type="radio" name="vm4" value="4"> 4</label>
+                  <label><input type="radio" name="vm4" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Acredito que meu trabalho deve refletir meus valores pessoais.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm5" value="1" required> 1</label>
+                  <label><input type="radio" name="vm5" value="2"> 2</label>
+                  <label><input type="radio" name="vm5" value="3"> 3</label>
+                  <label><input type="radio" name="vm5" value="4"> 4</label>
+                  <label><input type="radio" name="vm5" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Considero importante ser reconhecido(a) pelo meu desempenho.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm6" value="1" required> 1</label>
+                  <label><input type="radio" name="vm6" value="2"> 2</label>
+                  <label><input type="radio" name="vm6" value="3"> 3</label>
+                  <label><input type="radio" name="vm6" value="4"> 4</label>
+                  <label><input type="radio" name="vm6" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Quero ter estabilidade financeira em minha carreira.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm7" value="1" required> 1</label>
+                  <label><input type="radio" name="vm7" value="2"> 2</label>
+                  <label><input type="radio" name="vm7" value="3"> 3</label>
+                  <label><input type="radio" name="vm7" value="4"> 4</label>
+                  <label><input type="radio" name="vm7" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Procuro oportunidades que me desafiem tanto pessoal quanto profissionalmente.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm8" value="1" required> 1</label>
+                  <label><input type="radio" name="vm8" value="2"> 2</label>
+                  <label><input type="radio" name="vm8" value="3"> 3</label>
+                  <label><input type="radio" name="vm8" value="4"> 4</label>
+                  <label><input type="radio" name="vm8" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto um forte senso de propósito que guia minhas escolhas profissionais.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm9" value="1" required> 1</label>
+                  <label><input type="radio" name="vm9" value="2"> 2</label>
+                  <label><input type="radio" name="vm9" value="3"> 3</label>
+                  <label><input type="radio" name="vm9" value="4"> 4</label>
+                  <label><input type="radio" name="vm9" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Estou comprometido(a) com meu desenvolvimento pessoal e profissional.</p>
+                <div class="options">
+                  <label><input type="radio" name="vm10" value="1" required> 1</label>
+                  <label><input type="radio" name="vm10" value="2"> 2</label>
+                  <label><input type="radio" name="vm10" value="3"> 3</label>
+                  <label><input type="radio" name="vm10" value="4"> 4</label>
+                  <label><input type="radio" name="vm10" value="5"> 5</label>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- 4) Personalidade e Estilo de Trabalho (PE) -->
+          <div class="items-list">
+            <h3>Dimensão 4: Personalidade e Estilo de Trabalho (PE)</h3>
+            <ol>
+              <li class="question">
+                <p>Prefiro trabalhar em equipe do que de forma isolada.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe1" value="1" required> 1</label>
+                  <label><input type="radio" name="pe1" value="2"> 2</label>
+                  <label><input type="radio" name="pe1" value="3"> 3</label>
+                  <label><input type="radio" name="pe1" value="4"> 4</label>
+                  <label><input type="radio" name="pe1" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Gosto de ambientes de trabalho organizados e estruturados.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe2" value="1" required> 1</label>
+                  <label><input type="radio" name="pe2" value="2"> 2</label>
+                  <label><input type="radio" name="pe2" value="3"> 3</label>
+                  <label><input type="radio" name="pe2" value="4"> 4</label>
+                  <label><input type="radio" name="pe2" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto-me confortável em ambientes de trabalho dinâmicos e flexíveis.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe3" value="1" required> 1</label>
+                  <label><input type="radio" name="pe3" value="2"> 2</label>
+                  <label><input type="radio" name="pe3" value="3"> 3</label>
+                  <label><input type="radio" name="pe3" value="4"> 4</label>
+                  <label><input type="radio" name="pe3" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho facilidade para lidar com pessoas e estabelecer relações de trabalho positivas.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe4" value="1" required> 1</label>
+                  <label><input type="radio" name="pe4" value="2"> 2</label>
+                  <label><input type="radio" name="pe4" value="3"> 3</label>
+                  <label><input type="radio" name="pe4" value="4"> 4</label>
+                  <label><input type="radio" name="pe4" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Prefiro funções que exigem comunicação constante.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe5" value="1" required> 1</label>
+                  <label><input type="radio" name="pe5" value="2"> 2</label>
+                  <label><input type="radio" name="pe5" value="3"> 3</label>
+                  <label><input type="radio" name="pe5" value="4"> 4</label>
+                  <label><input type="radio" name="pe5" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Meu estilo de trabalho é adaptável a diferentes situações.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe6" value="1" required> 1</label>
+                  <label><input type="radio" name="pe6" value="2"> 2</label>
+                  <label><input type="radio" name="pe6" value="3"> 3</label>
+                  <label><input type="radio" name="pe6" value="4"> 4</label>
+                  <label><input type="radio" name="pe6" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Costumo ser metódico e detalhista nas minhas tarefas.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe7" value="1" required> 1</label>
+                  <label><input type="radio" name="pe7" value="2"> 2</label>
+                  <label><input type="radio" name="pe7" value="3"> 3</label>
+                  <label><input type="radio" name="pe7" value="4"> 4</label>
+                  <label><input type="radio" name="pe7" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho facilidade para liderar equipes e tomar decisões em grupo.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe8" value="1" required> 1</label>
+                  <label><input type="radio" name="pe8" value="2"> 2</label>
+                  <label><input type="radio" name="pe8" value="3"> 3</label>
+                  <label><input type="radio" name="pe8" value="4"> 4</label>
+                  <label><input type="radio" name="pe8" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Acredito que me encaixo bem em ambientes de trabalho competitivos.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe9" value="1" required> 1</label>
+                  <label><input type="radio" name="pe9" value="2"> 2</label>
+                  <label><input type="radio" name="pe9" value="3"> 3</label>
+                  <label><input type="radio" name="pe9" value="4"> 4</label>
+                  <label><input type="radio" name="pe9" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Prefiro ambientes onde possa escolher entre trabalhar individualmente ou em grupo, conforme a situação.</p>
+                <div class="options">
+                  <label><input type="radio" name="pe10" value="1" required> 1</label>
+                  <label><input type="radio" name="pe10" value="2"> 2</label>
+                  <label><input type="radio" name="pe10" value="3"> 3</label>
+                  <label><input type="radio" name="pe10" value="4"> 4</label>
+                  <label><input type="radio" name="pe10" value="5"> 5</label>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- 5) Empreendedorismo e Iniciativa (EI) -->
+          <div class="items-list">
+            <h3>Dimensão 5: Empreendedorismo e Iniciativa (EI)</h3>
+            <ol>
+              <li class="question">
+                <p>Tenho uma forte disposição para iniciar novos projetos.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei1" value="1" required> 1</label>
+                  <label><input type="radio" name="ei1" value="2"> 2</label>
+                  <label><input type="radio" name="ei1" value="3"> 3</label>
+                  <label><input type="radio" name="ei1" value="4"> 4</label>
+                  <label><input type="radio" name="ei1" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto-me motivado(a) a assumir riscos calculados na minha carreira.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei2" value="1" required> 1</label>
+                  <label><input type="radio" name="ei2" value="2"> 2</label>
+                  <label><input type="radio" name="ei2" value="3"> 3</label>
+                  <label><input type="radio" name="ei2" value="4"> 4</label>
+                  <label><input type="radio" name="ei2" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho iniciativa para identificar oportunidades de negócio.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei3" value="1" required> 1</label>
+                  <label><input type="radio" name="ei3" value="2"> 2</label>
+                  <label><input type="radio" name="ei3" value="3"> 3</label>
+                  <label><input type="radio" name="ei3" value="4"> 4</label>
+                  <label><input type="radio" name="ei3" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Estou disposto(a) a trabalhar de forma autônoma e com liberdade.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei4" value="1" required> 1</label>
+                  <label><input type="radio" name="ei4" value="2"> 2</label>
+                  <label><input type="radio" name="ei4" value="3"> 3</label>
+                  <label><input type="radio" name="ei4" value="4"> 4</label>
+                  <label><input type="radio" name="ei4" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Estou sempre em busca de inovações e melhorias no meu trabalho.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei5" value="1" required> 1</label>
+                  <label><input type="radio" name="ei5" value="2"> 2</label>
+                  <label><input type="radio" name="ei5" value="3"> 3</label>
+                  <label><input type="radio" name="ei5" value="4"> 4</label>
+                  <label><input type="radio" name="ei5" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Acredito que posso transformar ideias em projetos concretos.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei6" value="1" required> 1</label>
+                  <label><input type="radio" name="ei6" value="2"> 2</label>
+                  <label><input type="radio" name="ei6" value="3"> 3</label>
+                  <label><input type="radio" name="ei6" value="4"> 4</label>
+                  <label><input type="radio" name="ei6" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho capacidade para liderar iniciativas empreendedoras.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei7" value="1" required> 1</label>
+                  <label><input type="radio" name="ei7" value="2"> 2</label>
+                  <label><input type="radio" name="ei7" value="3"> 3</label>
+                  <label><input type="radio" name="ei7" value="4"> 4</label>
+                  <label><input type="radio" name="ei7" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto que posso sair da minha zona de conforto para buscar novas oportunidades.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei8" value="1" required> 1</label>
+                  <label><input type="radio" name="ei8" value="2"> 2</label>
+                  <label><input type="radio" name="ei8" value="3"> 3</label>
+                  <label><input type="radio" name="ei8" value="4"> 4</label>
+                  <label><input type="radio" name="ei8" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Sinto que possuo visão estratégica para identificar tendências de mercado.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei9" value="1" required> 1</label>
+                  <label><input type="radio" name="ei9" value="2"> 2</label>
+                  <label><input type="radio" name="ei9" value="3"> 3</label>
+                  <label><input type="radio" name="ei9" value="4"> 4</label>
+                  <label><input type="radio" name="ei9" value="5"> 5</label>
+                </div>
+              </li>
+              <li class="question">
+                <p>Tenho iniciativa para propor soluções inovadoras em situações de crise.</p>
+                <div class="options">
+                  <label><input type="radio" name="ei10" value="1" required> 1</label>
+                  <label><input type="radio" name="ei10" value="2"> 2</label>
+                  <label><input type="radio" name="ei10" value="3"> 3</label>
+                  <label><input type="radio" name="ei10" value="4"> 4</label>
+                  <label><input type="radio" name="ei10" value="5"> 5</label>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Seção de Resultados -->
+    <section id="perfis" class="result-section">
+      <div class="section-content">
+        <h2>Resultados e Perfil do Respondente</h2>
+        <div id="resultProfile"></div>
+      </div>
+    </section>
+
+    <!-- Botões de Ação -->
+    <div class="cta">
+      <button type="button" id="btnCorrigir">
+        <svg class="icon" fill="#fff" viewBox="0 0 24 24">
+          <path d="M12 4V1L8 5l4 4V6c3.309 0 6 2.691 6 6 0 1.255-.386 2.415-1.041 3.369l1.48 1.48C19.602 15.652 20 14.369 20 13c0-4.411-3.589-8-8-8zM4 11c0-1.369.398-2.652 1.061-3.73l1.48 1.48C6.386 9.585 6 10.745 6 12c0 3.309 2.691 6 6 6v3l4-4-4-4v3c-2.206 0-4-1.794-4-4z"/>
+        </svg>
+        Corrigir Respostas
+      </button>
+      <button type="button" id="btnWhats" style="display: none;">
+        <svg class="icon" fill="#fff" viewBox="0 0 24 24">
+          <path d="M20.52 3.48C18.34 1.31 15.35 0 12.17 0 5.46 0 0 5.46 0 12.17c0 2.15.57 4.25 1.64 6.08L0 24l5.93-1.57c1.76 1.04 3.77 1.59 5.85 1.59h.01c6.71 0 12.16-5.46 12.16-12.17 0-3.18-1.31-6.17-3.43-8.34zM12.17 22.06c-1.89 0-3.72-.51-5.33-1.48l-.38-.23-3.52.93.94-3.43-.25-.35C2.73 15.64 2.2 13.94 2.2 12.16c0-5.46 4.45-9.91 9.92-9.91 2.65 0 5.14 1.03 7.02 2.91 1.87 1.87 2.9 4.36 2.9 7.01.01 5.46-4.45 9.9-9.87 9.9z"/>
+          <path d="M17.07 14.96c-.3-.15-1.76-.87-2.03-.96-.27-.1-.47-.15-.66.15-.19.29-.76.96-.94 1.15-.17.19-.35.21-.65.07-.3-.15-1.26-.46-2.41-1.46-.89-.79-1.49-1.77-1.66-2.07-.17-.29-.02-.45.13-.6.13-.13.3-.33.44-.49.14-.16.19-.27.29-.46.1-.19.05-.36-.02-.51-.07-.15-.66-1.6-.9-2.18-.24-.58-.49-.5-.66-.51-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.35-.26.28-1 1-.99 2.43.01 1.43.98 2.82 1.12 3.02.15.19 1.94 2.96 4.72 4.02 1.89.82 2.63.89 3.58.74.55-.08 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.08-.13-.27-.19-.57-.34z"/>
+        </svg>
+        Enviar Resultado para WhatsApp
+      </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 | Richelmy Murta - Psicólogo Clínico | Especialista em Terapia Cognitivo-Comportamental</p>
+  </footer>
+
+  <!-- JavaScript (versão ES6+) -->
+  <script>
+    // Ocultar a splash screen após 2 segundos
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('hidden');
+      }, 2000);
+
+      // Evento para corrigir respostas
+      const btnCorrigir = document.getElementById('btnCorrigir');
+      btnCorrigir.addEventListener('click', processarFormulario);
+
+      // Evento para enviar WhatsApp
+      const btnWhats = document.getElementById('btnWhats');
+      btnWhats.addEventListener('click', enviarWhatsApp);
+    });
+
+    // Função para determinar o nível (pontuação: 10-25 = Baixa, 26-35 = Média, 36-50 = Alta)
+    const getNivel = (score) => {
+      if (score <= 25) return "Baixa";
+      if (score <= 35) return "Média";
+      return "Alta";
+    };
+
+    // Gera uma explicação para cada dimensão
+    const getDimensionExplanation = (dimensionName, score, nivel) => {
+      let explanationText = "";
+      if (nivel === "Baixa") {
+        explanationText = `Sua pontuação em ${dimensionName} (${score} pontos) é baixa, indicando a necessidade de desenvolvimento nessa área.`;
+      } else if (nivel === "Média") {
+        explanationText = `Sua pontuação em ${dimensionName} (${score} pontos) é moderada, mostrando competência com espaço para aprimoramento.`;
+      } else {
+        explanationText = `Sua pontuação em ${dimensionName} (${score} pontos) é alta, demonstrando domínio e solidez nessa dimensão.`;
+      }
+      return `<p><strong>${dimensionName}:</strong> ${score} pontos (${nivel}). ${explanationText}</p>`;
+    };
+
+    // Soma os escores de uma dimensão (cada dimensão possui 10 itens)
+    const somarDimensao = (formData, prefixo, totalItens) => {
+      let soma = 0;
+      for (let i = 1; i <= totalItens; i++) {
+        const valor = parseInt(formData.get(prefixo + i));
+        if (isNaN(valor)) {
+          alert("Por favor, responda todas as questões do inventário.");
+          return null;
+        }
+        soma += valor;
+      }
+      return soma;
+    };
+
+    // Ícones dos perfis
+const icons = {
+  "Interesses Profissionais": "https://i.pinimg.com/736x/63/3e/33/633e3362d2ae7ccb8b01a1f38cd123b2.jpg",
+  "Aptidões e Habilidades": "https://i.pinimg.com/736x/80/ca/a7/80caa7b5ab6840edca7fb69bfa6bc35a.jpg",
+  "Valores e Motivação": "https://i.pinimg.com/736x/8f/81/6f/8f816f690e2460e96b9df7d5e89c13f4.jpg",
+  "Personalidade e Estilo": "https://i.pinimg.com/736x/42/7a/86/427a865ea124c5b7db77cc6449b51a4b.jpg",
+  "Empreendedorismo e Iniciativa": "https://i.pinimg.com/736x/3b/d9/33/3bd933cd444101bcb062fe624fb7550d.jpg",
+  "Perfil Misto/Indeterminado": "https://i.pinimg.com/736x/50/a4/2c/50a42c0a969d3d5a6cc04e12ce1b4dd0.jpg"
+};
+
+    // Processa o formulário e determina o perfil
+    const processarFormulario = () => {
+      const form = document.getElementById('iopForm');
+      const formData = new FormData(form);
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const testDate = document.getElementById('date').value.trim();
+      if (!fullName || !testDate) {
+        alert("Por favor, preencha as informações do paciente (Nome e Data).");
+        return;
+      }
+
+      // Soma dos escores para cada dimensão (10 itens)
+      const inScore = somarDimensao(formData, "in", 10);
+      const ahScore = somarDimensao(formData, "ah", 10);
+      const vmScore = somarDimensao(formData, "vm", 10);
+      const peScore = somarDimensao(formData, "pe", 10);
+      const eiScore = somarDimensao(formData, "ei", 10);
+      if (
+        inScore === null ||
+        ahScore === null ||
+        vmScore === null ||
+        peScore === null ||
+        eiScore === null
+      ) return;
+
+      // Determina os níveis individuais
+      const nivelIN = getNivel(inScore);
+      const nivelAH = getNivel(ahScore);
+      const nivelVM = getNivel(vmScore);
+      const nivelPE = getNivel(peScore);
+      const nivelEI = getNivel(eiScore);
+
+      // Escore global e média
+      const globalTotal = inScore + ahScore + vmScore + peScore + eiScore;
+      const media = (globalTotal / 5).toFixed(1);
+
+      // Armazena escores
+      const escores = {
+        "Interesses Profissionais": inScore,
+        "Aptidões e Habilidades": ahScore,
+        "Valores e Motivação": vmScore,
+        "Personalidade e Estilo": peScore,
+        "Empreendedorismo e Iniciativa": eiScore
+      };
+
+      // Ordena as dimensões pelo escore
+      const keys = Object.keys(escores).sort((a, b) => escores[b] - escores[a]);
+      const dominante = keys[0];
+      const diferenca = escores[dominante] - escores[keys[1]];
+
+      let perfil = "";
+      let sugestoes = [];
+      let descricao = "";
+
+      // Verifica se há dominância clara
+      if (diferenca < 5) {
+        perfil = "Perfil Misto/Indeterminado";
+        sugestoes = ["Orientação Adicional Necessária"];
+        descricao = "Seus escores estão equilibrados entre as dimensões. Recomendamos uma análise complementar para identificar as áreas em que você possui maior potencial.";
+      } else {
+        perfil = dominante;
+        // Critérios e sugestões conforme o perfil dominante
+        switch (perfil) {
+          case "Interesses Profissionais":
+            sugestoes = ["Marketing", "Comunicação", "Design", "Jornalismo", "Publicidade"];
+            descricao = "Seu interesse é o fator principal. Você se identifica com áreas criativas e de comunicação, sugerindo carreiras que explorem suas preferências específicas.";
+            break;
+          case "Aptidões e Habilidades":
+            sugestoes = ["Engenharia", "Tecnologia da Informação", "Contabilidade", "Análise de Dados", "Pesquisa Técnica"];
+            descricao = "Suas aptidões técnicas são predominantes. Você se destaca em habilidades práticas e analíticas, sendo ideal para carreiras que valorizam competência técnica.";
+            break;
+          case "Valores e Motivação":
+            sugestoes = ["Psicologia", "Educação", "Serviço Social", "Gestão de Projetos Sociais", "Carreiras em ONGs"];
+            descricao = "Seus valores e senso de propósito guiam suas escolhas. Você busca significado e impacto social, sugerindo áreas que alinhem realização pessoal com responsabilidade social.";
+            break;
+          case "Personalidade e Estilo":
+            sugestoes = ["Recursos Humanos", "Administração", "Gestão de Pessoas", "Consultoria Organizacional", "Relações Públicas"];
+            descricao = "Seu estilo de trabalho e personalidade são marcantes. Você se adapta bem a diferentes ambientes e prefere funções que valorizem suas características interpessoais.";
+            break;
+          case "Empreendedorismo e Iniciativa":
+            sugestoes = ["Empreendedorismo", "Startups", "Consultoria de Inovação", "Gestão de Projetos", "Desenvolvimento de Negócios"];
+            descricao = "Você tem forte iniciativa e disposição para inovar. Este perfil é ideal para quem deseja liderar projetos e buscar oportunidades de negócio de forma autônoma.";
+            break;
+          default:
+            perfil = "Perfil Misto/Indeterminado";
+            sugestoes = ["Orientação Adicional Necessária"];
+            descricao = "Não foi possível identificar um perfil dominante. Recomenda-se avaliação mais aprofundada.";
+        }
+      }
+
+      // Monta o relatório de resultados
+      const resultHTML = `
+        <div class="result-item">
+          <img src="${icons[perfil]}" alt="${perfil}" class="perfil-icon" />
+          <p><strong>Perfil Dominante:</strong> ${perfil}</p>
+          <p><strong>Total de Pontos:</strong> ${globalTotal} (Média: ${media})</p>
+          <p>${descricao}</p>
+          <p><strong>Carreiras Sugeridas:</strong> ${sugestoes.join(", ")}</p>
+        </div>
+        <hr>
+        <div class="perfil-section">
+          <h3>Detalhamento por Dimensão</h3>
+          ${getDimensionExplanation("Interesses Profissionais (IN)", inScore, nivelIN)}
+          ${getDimensionExplanation("Aptidões e Habilidades (AH)", ahScore, nivelAH)}
+          ${getDimensionExplanation("Valores e Motivação (VM)", vmScore, nivelVM)}
+          ${getDimensionExplanation("Personalidade e Estilo (PE)", peScore, nivelPE)}
+          ${getDimensionExplanation("Empreendedorismo e Iniciativa (EI)", eiScore, nivelEI)}
+        </div>
+      `;
+
+      document.getElementById('resultProfile').innerHTML = resultHTML;
+      const resultSection = document.getElementById('perfis');
+      resultSection.classList.add('expanded');
+      resultSection.style.display = 'block';
+
+      // Exibir botão WhatsApp
+      document.getElementById('btnWhats').style.display = 'inline-flex';
+
+      // Preparar mensagem para WhatsApp
+      const mensagem = `Resultados do Inventário de Orientação Profissional:
+Nome: ${fullName}
+Data do Teste: ${testDate}
+
+Interesses Profissionais (IN): ${inScore} pontos (${nivelIN})
+Aptidões e Habilidades (AH): ${ahScore} pontos (${nivelAH})
+Valores e Motivação (VM): ${vmScore} pontos (${nivelVM})
+Personalidade e Estilo (PE): ${peScore} pontos (${nivelPE})
+Empreendedorismo e Iniciativa (EI): ${eiScore} pontos (${nivelEI})
+Total: ${globalTotal} pontos (Média: ${media})
+
+Perfil Dominante: ${perfil}
+Carreiras Sugeridas: ${sugestoes.join(", ")}
+
+Detalhamento:
+- Interesses Profissionais: Áreas que despertam seu interesse e paixão.
+- Aptidões e Habilidades: Suas competências técnicas e capacidade de executar.
+- Valores e Motivação: Seu senso de propósito e alinhamento com seus valores.
+- Personalidade e Estilo: Seu modo de trabalhar e preferências no ambiente profissional.
+- Empreendedorismo e Iniciativa: Sua disposição para inovar e liderar iniciativas.`;
+
+      // Armazena a mensagem para envio posterior
+      document.getElementById('btnWhats').dataset.resultado = mensagem;
+    };
+
+    // Envio via WhatsApp (corrigido para seu número)
+    const enviarWhatsApp = () => {
+      const resultado = document.getElementById('btnWhats').dataset.resultado;
+      if (!resultado) {
+        alert("Por favor, corrija as respostas primeiro.");
+        return;
+      }
+      // Número de telefone corrigido com DDI do Brasil (55) e DDD (35)
+      const numeroWhats = "5535984640729";
+      const urlWhats = `https://wa.me/${numeroWhats}?text=${encodeURIComponent(resultado)}`;
+      window.open(urlWhats, '_blank');
+    };
+  </script>
+</body>
+</html>
